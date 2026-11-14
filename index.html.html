@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON LAB — студия дизайна и разработки</title>
+<meta name="description" content="Независимая студия дизайна и разработки. Сайты, интерфейсы, брендинг и моушн.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --magenta:#d610fe;
+    --pink:#fe10b0;
+    --indigo:#5f10fe;
+    --green:#39fe10;
+    --bg:#08040f;
+    --bg2:#0e0818;
+    --surface:#130a20;
+    --line:rgba(214,16,254,.15);
+    --text:#f0eaff;
+    --muted:#8a7fa8;
+  }
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    background:var(--bg);color:var(--text);
+    line-height:1.55;-webkit-font-smoothing:antialiased;
+    overflow-x:hidden;position:relative;
+  }
+  a{color:inherit;text-decoration:none}
+  .container{width:min(1200px,100% - 48px);margin-inline:auto}
+  ::selection{background:var(--magenta);color:var(--bg)}
+
+  /* фоновая сетка */
+  body::before{
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(95,16,254,.08) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(95,16,254,.08) 1px,transparent 1px);
+    background-size:60px 60px;
+    -webkit-mask-image:radial-gradient(ellipse 100% 80% at 50% 0%,#000 20%,transparent 90%);
+    mask-image:radial-gradient(ellipse 100% 80% at 50% 0%,#000 20%,transparent 90%);
+  }
+  /* шум */
+  body::after{
+    content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity:.05;mix-blend-mode:overlay;
+  }
+  main,header,footer{position:relative;z-index:2}
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    transition:background .3s,border-color .3s,backdrop-filter .3s;
+    border-bottom:1px solid transparent;
+  }
+  header.scrolled{
+    background:rgba(8,4,15,.8);
+    -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+    border-bottom-color:rgba(214,16,254,.15);
+  }
+  .nav-wrap{display:flex;align-items:center;justify-content:space-between;height:80px;gap:20px}
+  .logo{
+    display:flex;align-items:center;gap:10px;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:20px;letter-spacing:-.01em;flex-shrink:0;
+  }
+  .logo-mark{
+    width:34px;height:34px;border-radius:10px;
+    background:linear-gradient(135deg,var(--pink),var(--indigo));
+    display:grid;place-items:center;
+    box-shadow:0 0 20px rgba(254,16,176,.6);
+  }
+  .logo-mark svg{width:20px;height:20px;color:#fff}
+  .logo span{background:linear-gradient(90deg,var(--pink),var(--magenta),var(--indigo));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  nav.nav-links{display:flex;gap:2px;align-items:center;margin-left:auto}
+  nav.nav-links a{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;font-weight:500;color:var(--muted);
+    padding:8px 16px;border-radius:8px;
+    letter-spacing:.02em;
+    transition:color .2s,background .2s;
+  }
+  nav.nav-links a:hover{color:var(--text);background:rgba(214,16,254,.1)}
+
+  .status{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'JetBrains Mono',monospace;font-size:11.5px;
+    font-weight:500;color:var(--green);
+    padding:7px 14px;border-radius:100px;
+    background:rgba(57,254,16,.06);
+    border:1px solid rgba(57,254,16,.25);
+    margin-left:16px;
+    letter-spacing:.04em;
+    white-space:nowrap;
+  }
+  .status::before{
+    content:'';width:6px;height:6px;border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 8px var(--green);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{50%{opacity:.35}}
+
+  .burger{
+    display:none;width:44px;height:44px;border-radius:10px;
+    border:1px solid var(--line);background:rgba(214,16,254,.06);
+    cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+    margin-left:8px;
+  }
+  .burger span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+  .burger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .burger.active span:nth-child(2){opacity:0}
+  .burger.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+  /* ---------- BUTTONS ---------- */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    padding:16px 34px;border-radius:100px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:15px;font-weight:600;
+    border:none;cursor:pointer;
+    transition:transform .25s,box-shadow .25s,background .25s;
+    white-space:nowrap;letter-spacing:-.01em;
+  }
+  .btn-primary{
+    background:linear-gradient(100deg,var(--pink),var(--magenta));
+    color:#fff;
+    box-shadow:0 0 0 1px rgba(254,16,176,.3),0 10px 40px -10px rgba(254,16,176,.7);
+  }
+  .btn-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:0 0 0 1px rgba(254,16,176,.6),0 15px 50px -8px rgba(254,16,176,.9),0 0 60px rgba(214,16,254,.4);
+  }
+  .btn-ghost{
+    background:transparent;
+    color:var(--text);
+    border:1px solid rgba(214,16,254,.35);
+  }
+  .btn-ghost:hover{
+    background:rgba(214,16,254,.1);
+    border-color:var(--magenta);
+    transform:translateY(-2px);
+    box-shadow:0 0 30px rgba(214,16,254,.3);
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:170px 0 100px;
+    position:relative;overflow:hidden;
+  }
+  .orbs{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
+  .orb-1{width:560px;height:560px;background:var(--magenta);top:-180px;right:-100px;animation:float1 18s ease-in-out infinite}
+  .orb-2{width:420px;height:420px;background:var(--indigo);top:120px;left:-140px;animation:float2 22s ease-in-out infinite}
+  .orb-3{width:340px;height:340px;background:var(--pink);bottom:-120px;left:38%;opacity:.35;animation:float1 20s ease-in-out infinite -5s}
+  @keyframes float1{50%{transform:translate(-40px,40px) scale(1.1)}}
+  @keyframes float2{50%{transform:translate(50px,-30px) scale(1.05)}}
+
+  .hero-inner{position:relative;z-index:2;max-width:1000px}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;font-weight:500;
+    color:var(--pink);
+    letter-spacing:.14em;text-transform:uppercase;
+    padding:8px 16px;border-radius:100px;
+    background:rgba(254,16,176,.06);
+    border:1px solid rgba(254,16,176,.25);
+    margin-bottom:34px;
+  }
+  .eyebrow::before{content:'◆';font-size:8px;color:var(--green)}
+
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(52px,8.5vw,124px);
+    line-height:.92;
+    letter-spacing:-.05em;
+    margin-bottom:36px;
+  }
+  h1 .line{display:block;overflow:hidden}
+  h1 .word{display:inline-block}
+  .grad-text{
+    background:linear-gradient(110deg,var(--pink) 0%,var(--magenta) 35%,var(--indigo) 70%,var(--green) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .outline-text{
+    color:transparent;
+    -webkit-text-stroke:2px rgba(240,234,255,.35);
+    letter-spacing:-.02em;
+  }
+  .hero-lead{
+    font-size:19px;color:var(--muted);
+    max-width:600px;line-height:1.55;
+    margin-bottom:48px;
+  }
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:80px}
+
+  .hero-meta{
+    display:grid;grid-template-columns:repeat(3,auto);
+    gap:56px;padding-top:36px;
+    border-top:1px solid var(--line);
+    justify-content:start;
+  }
+  .meta-item .num{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:32px;font-weight:700;
+    letter-spacing:-.03em;
+    background:linear-gradient(120deg,var(--text),var(--muted));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .meta-item .label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;color:var(--muted);
+    letter-spacing:.1em;text-transform:uppercase;
+    margin-top:4px;
+  }
+
+  /* ---------- MARQUEE ---------- */
+  .marquee{
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    padding:28px 0;overflow:hidden;
+    background:rgba(19,10,32,.5);
+  }
+  .marquee-track{
+    display:flex;gap:56px;white-space:nowrap;
+    animation:scroll 32s linear infinite;
+  }
+  .marquee-item{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:36px;
+    letter-spacing:-.03em;
+    display:flex;align-items:center;gap:56px;
+    flex-shrink:0;
+  }
+  .marquee-item .word{color:var(--muted);transition:color .3s}
+  .marquee-item .word:nth-child(4n+1){color:var(--text)}
+  .marquee-item .star{
+    color:var(--pink);
+    font-size:24px;
+    filter:drop-shadow(0 0 10px var(--pink));
+  }
+  @keyframes scroll{to{transform:translateX(-50%)}}
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:120px 0;position:relative}
+  .sec-head{max-width:760px;margin-bottom:72px}
+  .sec-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;font-weight:500;
+    color:var(--pink);
+    letter-spacing:.14em;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:8px;
+    margin-bottom:22px;
+  }
+  .sec-tag::before{content:'▸';color:var(--green);font-size:14px}
+  h2{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(36px,5vw,64px);
+    line-height:1.02;letter-spacing:-.04em;
+    margin-bottom:20px;
+  }
+  .sec-head p{
+    color:var(--muted);font-size:17px;
+    max-width:540px;line-height:1.6;
+  }
+
+  /* ---------- SERVICES ---------- */
+  .services-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+  .service{
+    padding:40px 36px;
+    border-radius:24px;
+    background:linear-gradient(160deg,rgba(214,16,254,.06),rgba(95,16,254,.02));
+    border:1px solid rgba(214,16,254,.15);
+    position:relative;overflow:hidden;
+    transition:transform .35s cubic-bezier(.2,.7,.2,1),border-color .35s,box-shadow .35s;
+    cursor:pointer;
+  }
+  .service::before{
+    content:'';position:absolute;
+    inset:0;border-radius:inherit;opacity:0;
+    transition:opacity .4s;
+    background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),rgba(214,16,254,.18),transparent 70%);
+    pointer-events:none;
+  }
+  .service:hover{
+    transform:translateY(-4px);
+    border-color:rgba(214,16,254,.4);
+    box-shadow:0 0 60px -20px rgba(214,16,254,.6);
+  }
+  .service:hover::before{opacity:1}
+  .service-num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;font-weight:500;
+    color:var(--muted);
+    letter-spacing:.1em;
+    margin-bottom:28px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .service-num .arrow{
+    font-size:20px;color:var(--pink);
+    transition:transform .3s;
+    transform:rotate(-45deg);
+  }
+  .service:hover .service-num .arrow{transform:rotate(0)}
+  .service h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;font-size:26px;
+    letter-spacing:-.02em;
+    margin-bottom:12px;
+  }
+  .service p{font-size:15px;color:var(--muted);line-height:1.55}
+  .service:nth-child(1) .service-num .arrow,
+  .service:nth-child(4) .service-num .arrow{color:var(--green)}
+
+  /* ---------- WORK ---------- */
+  .work-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .work{
+    display:flex;flex-direction:column;
+    border-radius:24px;overflow:hidden;
+    background:var(--surface);
+    border:1px solid rgba(214,16,254,.12);
+    transition:transform .35s cubic-bezier(.2,.7,.2,1),border-color .35s,box-shadow .35s;
+    cursor:pointer;
+  }
+  .work:hover{
+    transform:translateY(-6px);
+    border-color:rgba(254,16,176,.4);
+    box-shadow:0 0 70px -25px rgba(254,16,176,.7);
+  }
+  .work-preview{
+    aspect-ratio:4/3;
+    position:relative;overflow:hidden;
+    display:grid;place-items:center;
+    isolation:isolate;
+  }
+  .work-preview svg{
+    width:100%;height:100%;
+    transition:transform .6s cubic-bezier(.2,.7,.2,1);
+  }
+  .work:hover .work-preview svg{transform:scale(1.08)}
+  .work-body{padding:24px 26px 28px}
+  .work-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;color:var(--pink);
+    letter-spacing:.14em;text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  .work-body h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;font-size:22px;
+    letter-spacing:-.02em;margin-bottom:8px;
+  }
+  .work-body p{font-size:14px;color:var(--muted)}
+
+  /* ---------- CTA ---------- */
+  .cta-section{padding:60px 0 140px}
+  .cta-box{
+    position:relative;overflow:hidden;
+    padding:100px 64px;
+    border-radius:32px;
+    background:
+      radial-gradient(800px circle at 15% 0%,rgba(214,16,254,.25),transparent 60%),
+      radial-gradient(600px circle at 90% 100%,rgba(95,16,254,.3),transparent 60%),
+      linear-gradient(160deg,rgba(254,16,176,.08),rgba(95,16,254,.05));
+    border:1px solid rgba(214,16,254,.25);
+    text-align:center;
+  }
+  .cta-box::before{
+    content:'';position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(214,16,254,.06) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(214,16,254,.06) 1px,transparent 1px);
+    background-size:40px 40px;
+    -webkit-mask-image:radial-gradient(ellipse at center,#000 20%,transparent 75%);
+    mask-image:radial-gradient(ellipse at center,#000 20%,transparent 75%);
+    pointer-events:none;
+  }
+  .cta-box > *{position:relative;z-index:1}
+  .cta-box h2{
+    font-size:clamp(40px,6vw,84px);
+    letter-spacing:-.05em;line-height:.95;
+    margin-bottom:24px;
+  }
+  .cta-box p{
+    font-size:18px;color:var(--muted);
+    max-width:520px;margin:0 auto 44px;
+    line-height:1.55;
+  }
+  .cta-actions{
+    display:flex;gap:14px;flex-wrap:wrap;justify-content:center;
+    margin-bottom:40px;
+  }
+  .cta-contacts{
+    display:flex;gap:32px;justify-content:center;flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13.5px;color:var(--muted);
+  }
+  .cta-contacts a{
+    display:inline-flex;align-items:center;gap:8px;
+    transition:color .2s;
+  }
+  .cta-contacts a:hover{color:var(--pink)}
+  .cta-contacts .dot{
+    width:5px;height:5px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 8px var(--green);
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:60px 0 40px;
+    background:linear-gradient(180deg,transparent,rgba(95,16,254,.04));
+  }
+  .footer-top{
+    display:grid;grid-template-columns:2fr 1fr 1fr;
+    gap:60px;padding-bottom:56px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:32px;
+  }
+  .footer-brand .logo{margin-bottom:20px}
+  .footer-brand p{
+    font-size:14.5px;color:var(--muted);
+    max-width:320px;line-height:1.65;
+  }
+  .footer-col h4{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;font-weight:500;
+    letter-spacing:.14em;text-transform:uppercase;
+    color:var(--pink);margin-bottom:20px;
+  }
+  .footer-col a{
+    display:block;
+    font-size:14.5px;color:var(--muted);
+    padding:6px 0;
+    transition:color .2s,padding-left .2s;
+  }
+  .footer-col a:hover{color:var(--text);padding-left:4px}
+  .footer-bottom{
+    display:flex;justify-content:space-between;align-items:center;
+    gap:20px;flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;color:var(--muted);
+    letter-spacing:.02em;
+  }
+  .footer-bottom .made{
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .footer-bottom .made .heart{color:var(--pink)}
+
+  /* ---------- REVEAL ---------- */
+  .reveal{
+    opacity:0;transform:translateY(30px);
+    transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.visible{opacity:1;transform:none}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media(max-width:1000px){
+    .services-grid{grid-template-columns:1fr}
+    .work-grid{grid-template-columns:repeat(2,1fr)}
+    .footer-top{grid-template-columns:1fr 1fr;gap:40px}
+    .footer-brand{grid-column:span 2}
+  }
+  @media(max-width:860px){
+    nav.nav-links{
+      position:absolute;top:100%;left:0;right:0;
+      flex-direction:column;align-items:stretch;
+      background:rgba(8,4,15,.98);
+      -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+      padding:16px 24px 24px;
+      border-bottom:1px solid var(--line);
+      gap:2px;display:none;margin-left:0;
+    }
+    nav.nav-links.open{display:flex}
+    nav.nav-links a{padding:14px 16px;font-size:14px;border-radius:10px}
+    .status{display:none}
+    .burger{display:flex;margin-left:auto}
+    .hero{padding:130px 0 80px}
+    .hero-meta{gap:36px}
+    .cta-box{padding:64px 32px;border-radius:24px}
+  }
+  @media(max-width:680px){
+    .container{width:calc(100% - 32px)}
+    section{padding:80px 0}
+    .work-grid{grid-template-columns:1fr}
+    .footer-top{grid-template-columns:1fr;gap:36px}
+    .footer-brand{grid-column:auto}
+    .hero-meta{grid-template-columns:1fr 1fr;gap:28px}
+    .hero-cta .btn{flex:1;min-width:0;padding:14px 24px}
+    h1{letter-spacing:-.04em}
+    .cta-actions .btn{flex:1;min-width:0}
+    .marquee-item{font-size:26px;gap:36px}
+    .marquee-track{gap:36px}
+  }
+</style>
+</head>
+<body>
+
+<header id="header">
+  <div class="container nav-wrap">
+    <a href="#" class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/>
+        </svg>
+      </span>
+      <span>NEON LAB</span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#services">Услуги</a>
+      <a href="#work">Работы</a>
+      <a href="#contact">Контакты</a>
+    </nav>
+    <span class="status">открыты к проектам</span>
+    <button class="burger" id="burger" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="orbs">
+      <span class="orb orb-1"></span>
+      <span class="orb orb-2"></span>
+      <span class="orb orb-3"></span>
+    </div>
+    <div class="container hero-inner">
+      <span class="eyebrow reveal">независимая студия · est. 2019</span>
+      <h1 class="reveal" style="transition-delay:.06s">
+        <span class="line"><span class="word grad-text">СВЕТ</span></span>
+        <span class="line"><span class="word outline-text">ФОРМА</span></span>
+        <span class="line"><span class="word grad-text">КОД</span></span>
+      </h1>
+      <p class="hero-lead reveal" style="transition-delay:.14s">
+        Проектируем и собираем цифровые продукты, которые невозможно не заметить. Дизайн, разработка и моушн — всё в одной студии.
+      </p>
+      <div class="hero-cta reveal" style="transition-delay:.2s">
+        <a href="#contact" class="btn btn-primary">Начать проект →</a>
+        <a href="#work" class="btn btn-ghost">Смотреть работы</a>
+      </div>
+      <div class="hero-meta reveal" style="transition-delay:.28s">
+        <div class="meta-item">
+          <div class="num">48+</div>
+          <div class="label">проектов</div>
+        </div>
+        <div class="meta-item">
+          <div class="num">12</div>
+          <div class="label">наград</div>
+        </div>
+        <div class="meta-item">
+          <div class="num">7 лет</div>
+          <div class="label">в цифре</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <div class="marquee-item">
+        <span class="word">DESIGN</span><span class="star">✦</span>
+        <span class="word">CODE</span><span class="star">✦</span>
+        <span class="word">MOTION</span><span class="star">✦</span>
+        <span class="word">BRAND</span><span class="star">✦</span>
+        <span class="word">UI/UX</span><span class="star">✦</span>
+        <span class="word">3D</span><span class="star">✦</span>
+      </div>
+      <div class="marquee-item">
+        <span class="word">DESIGN</span><span class="star">✦</span>
+        <span class="word">CODE</span><span class="star">✦</span>
+        <span class="word">MOTION</span><span class="star">✦</span>
+        <span class="word">BRAND</span><span class="star">✦</span>
+        <span class="word">UI/UX</span><span class="star">✦</span>
+        <span class="word">3D</span><span class="star">✦</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="container">
+      <div class="sec-head reveal">
+        <span class="sec-tag">что мы делаем</span>
+        <h2>Четыре направления — один результат</h2>
+        <p>Работаем как одна команда: дизайнеры, разработчики и моушн-артисты собирают продукт от идеи до релиза.</p>
+      </div>
+      <div class="services-grid">
+
+        <div class="service reveal">
+          <div class="service-num">01 / DESIGN <span class="arrow">↗</span></div>
+          <h3>Digital-дизайн</h3>
+          <p>Лендинги, интерфейсы и дизайн-системы. Продумываем каждый пиксель, чтобы продукт не только выглядел — но и работал.</p>
+        </div>
+
+        <div class="service reveal" style="transition-delay:.07s">
+          <div class="service-num">02 / CODE <span class="arrow">↗</span></div>
+          <h3>Разработка</h3>
+          <p>Frontend, интерактив, анимации. Пишем быстрый и чистый код, который не развалится при первом обновлении.</p>
+        </div>
+
+        <div class="service reveal" style="transition-delay:.14s">
+          <div class="service-num">03 / BRAND <span class="arrow">↗</span></div>
+          <h3>Брендинг</h3>
+          <p>Логотипы, айдентика и гайдлайны. Создаём визуальные системы, по которым бренд узнают с первого взгляда.</p>
+        </div>
+
+        <div class="service reveal" style="transition-delay:.21s">
+          <div class="service-num">04 / MOTION <span class="arrow">↗</span></div>
+          <h3>Моушн и 3D</h3>
+          <p>Анимация, видеоролики и трёхмерная графика. Оживляем статичные сцены и превращаем их в истории.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section id="work">
+    <div class="container">
+      <div class="sec-head reveal">
+        <span class="sec-tag">избранное</span>
+        <h2>Работы, которые говорят сами</h2>
+        <p>Небольшая подборка последних проектов — от лендингов до полноценных платформ.</p>
+      </div>
+      <div class="work-grid">
+
+        <article class="work reveal">
+          <div class="work-preview">
+            <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+              <defs>
+                <radialGradient id="pg1" cx="30%" cy="30%">
+                  <stop offset="0%" stop-color="#fe10b0"/>
+                  <stop offset="100%" stop-color="#5f10fe"/>
+                </radialGradient>
+              </defs>
+              <rect width="400" height="300" fill="url(#pg1)"/>
+              <g fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5">
+                <circle cx="200" cy="150" r="40"/>
+                <circle cx="200" cy="150" r="80"/>
+                <circle cx="200" cy="150" r="120"/>
+                <circle cx="200" cy="150" r="160"/>
+              </g>
+              <circle cx="200" cy="150" r="20" fill="#39fe10"/>
+            </svg>
+          </div>
+          <div class="work-body">
+            <div class="work-tag">ПЛАТФОРМА · 2024</div>
+            <h3>PRISM</h3>
+            <p>Платформа для диджитал-артистов</p>
+          </div>
+        </article>
+
+        <article class="work reveal" style="transition-delay:.08s">
+          <div class="work-preview">
+            <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+              <rect width="400" height="300" fill="#5f10fe"/>
+              <g>
+                <rect x="50" y="50" width="60" height="60" fill="#d610fe" transform="rotate(20 80 80)"/>
+                <rect x="150" y="50" width="60" height="60" fill="#fe10b0" transform="rotate(-15 180 80)"/>
+                <rect x="250" y="50" width="60" height="60" fill="#39fe10" transform="rotate(30 280 80)"/>
+                <rect x="50" y="150" width="60" height="60" fill="#fe10b0" transform="rotate(-20 80 180)"/>
+                <rect x="150" y="150" width="60" height="60" fill="#39fe10" transform="rotate(15 180 180)"/>
+                <rect x="250" y="150" width="60" height="60" fill="#d610fe" transform="rotate(-30 280 180)"/>
+                <rect x="100" y="230" width="60" height="60" fill="#39fe10" transform="rotate(45 130 260)"/>
+                <rect x="230" y="230" width="60" height="60" fill="#fe10b0" transform="rotate(-10 260 260)"/>
+              </g>
+            </svg>
+          </div>
+          <div class="work-body">
+            <div class="work-tag">БРЕНДИНГ · 2024</div>
+            <h3>VORTEX</h3>
+            <p>Айдентика музыкального лейбла</p>
+          </div>
+        </article>
+
+        <article class="work reveal" style="transition-delay:.16s">
+          <div class="work-preview">
+            <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+              <defs>
+                <linearGradient id="pg3" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#d610fe"/>
+                  <stop offset="100%" stop-color="#39fe10"/>
+                </linearGradient>
+              </defs>
+              <rect width="400" height="300" fill="#0e0818"/>
+              <g stroke="url(#pg3)" stroke-width="3" fill="none">
+                <path d="M0 150 Q 100 50, 200 150 T 400 150"/>
+                <path d="M0 200 Q 100 100, 200 200 T 400 200"/>
+                <path d="M0 250 Q 100 150, 200 250 T 400 250"/>
+                <path d="M0 100 Q 100 0, 200 100 T 400 100"/>
+                <path d="M0 50 Q 100 -50, 200 50 T 400 50"/>
+              </g>
+            </svg>
+          </div>
+          <div class="work-body">
+            <div class="work-tag">E-COMMERCE · 2023</div>
+            <h3>GLOW</h3>
+            <p>Магазин уличной одежды</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="contact" class="cta-section">
+    <div class="container">
+      <div class="cta-box reveal">
+        <h2>Есть идея?<br><span class="grad-text">Зажжём.</span></h2>
+        <p>Расскажите о проекте — ответим в течение дня и предложим, как это можно сделать.</p>
+        <div class="cta-actions">
+          <a href="mailto:hello@neonlab.studio" class="btn btn-primary">hello@neonlab.studio</a>
+          <a href="https://t.me/" class="btn btn-ghost">Telegram</a>
+        </div>
+        <div class="cta-contacts">
+          <span><span class="dot"></span> обычно отвечаем за 2–3 часа</span>
+          <span>пн–пт · 10:00–19:00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          <span class="logo-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/>
+            </svg>
+          </span>
+          <span>NEON LAB</span>
+        </a>
+        <p>Независимая студия дизайна и разработки. Собираем цифровые продукты, которые светятся — и продают.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Навигация</h4>
+        <a href="#services">Услуги</a>
+        <a href="#work">Работы</a>
+        <a href="#contact">Контакты</a>
+      </div>
+      <div class="footer-col">
+        <h4>Связь</h4>
+        <a href="mailto:hello@neonlab.studio">hello@neonlab.studio</a>
+        <a href="https://t.me/">Telegram</a>
+        <a href="#">Behance</a>
+        <a href="#">Dribbble</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 NEON LAB · все права защищены</span>
+      <span class="made">сделано с <span class="heart">♥</span> и неоном</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Sticky header
+  const header = document.getElementById('header');
+  const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 20);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Mobile menu
+  const burger = document.getElementById('burger');
+  const navLinks = document.getElementById('navLinks');
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('active');
+    navLinks.classList.toggle('open');
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    burger.classList.remove('active');
+    navLinks.classList.remove('open');
+  }));
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Cursor glow on service cards
+  document.querySelectorAll('.service').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+</script>
+
+</body>
+</html>
